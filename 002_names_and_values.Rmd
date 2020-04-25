@@ -1,0 +1,42 @@
+---
+title: "Names and values"
+date: 2020-04-25 18:13:03
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    theme: flatly
+    toc: yes
+    toc_depth: 2
+bibliography: advanced_R.bib
+---
+
+<style>
+
+body {
+text-align: justify}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo      = TRUE, 
+                      warning   = FALSE, 
+                      message   = FALSE,
+                      fig.align = "center")
+```
+
+```{r libraries}
+
+
+```
+
+# Names and values
+
+This section is based on [@wickham_advanced_2019, Chapter 2]
+
+# Bibliography
+
+
+
