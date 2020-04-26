@@ -129,7 +129,14 @@ y <- x
 include_graphics(path = "002_binding-2.png")
 ```
 
-You might have noticed that the value `1:3` has a label: `0x74b`. While the vector doesn't have a name, we will occasionally need to refer to an object independent of its bindings. To make that possible, we will label values with a unique identifier
+You might have noticed that the value `1:3` has a label: `0x74b`. While the vector doesn't have a name, we will occasionally need to refer to an object independent of its bindings. To make that possible, we will label values with a unique identifier. You can access an object’s identifier with `lobstr::obj_addr()`:
+
+```{r}
+
+obj_addr(x)
+obj_addr(y)
+```
+
 
 # Bibliography
 
