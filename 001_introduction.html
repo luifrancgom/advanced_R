@@ -1696,6 +1696,12 @@ summary {
 <ul>
 <li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
 <li><a href="#why-r"><span class="toc-section-number">1.1</span> Why R?</a></li>
+<li><a href="#who-should-read-this-book"><span class="toc-section-number">1.2</span> Who should read this book</a></li>
+<li><a href="#what-you-will-get-out-of-this-book"><span class="toc-section-number">1.3</span> What you will get out of this book</a></li>
+<li><a href="#what-you-will-not-learn"><span class="toc-section-number">1.4</span> What you will not learn</a></li>
+<li><a href="#meta-techniques"><span class="toc-section-number">1.5</span> Meta-techniques</a></li>
+<li><a href="#recommended-reading"><span class="toc-section-number">1.6</span> Recommended reading</a></li>
+<li><a href="#getting-help"><span class="toc-section-number">1.7</span> Getting help</a></li>
 </ul></li>
 <li><a href="#bibliography">Bibliography</a></li>
 </ul>
@@ -1712,13 +1718,165 @@ text-align: justify}
 <p>This section is based on <span class="citation">(Wickham 2019, Chapter 1)</span></p>
 <div id="why-r" class="section level2">
 <h2><span class="header-section-number">1.1</span> Why R?</h2>
+<ul>
+<li><p>Free, open source, and available on every major platform</p></li>
+<li><p>Diverse and welcoming community: online and in person</p>
+<ul>
+<li><p><strong><a href="https://www.rfordatasci.com/">R4DS Online Learning Community</a></strong></p></li>
+<li><p><strong><a href="https://rladies.org/">R-Ladies</a></strong></p></li>
+</ul></li>
+<li><p>Massive set of packages for:</p>
+<ul>
+<li><p>Statistical modelling</p></li>
+<li><p>Machine learning</p></li>
+<li><p>Visualisation</p></li>
+<li><p>Importing and manipulating data</p>
+<ul>
+<li><p><strong><a href="https://cran.r-project.org/">CRAN</a></strong></p></li>
+<li><p><strong><a href="https://www.bioconductor.org/">Bioconductor</a></strong></p></li>
+</ul></li>
+</ul></li>
+<li><p><strong><a href="https://rstudio.com/products/rstudio/">RStudio IDE</a></strong> provides an integrated development environment</p></li>
+<li><p>There is a company called <strong><a href="https://rstudio.com/">RStudio</a></strong> whose mission is to create free and open-source software for data science, scientific research, and technical communication</p></li>
+<li><p>A strong foundation of functional programming</p></li>
+<li><p>Powerful metaprogramming facilities</p></li>
+<li><p>The ease with which R can connect to high-performance programming languages like C, Fortran, and C++</p></li>
+</ul>
+<div id="why-r-is-not-perfect" class="section level3">
+<h3><span class="header-section-number">1.1.1</span> Why R is not perfect?</h3>
+<ul>
+<li><p>Much of the R code you’ll see in the wild is written in haste to solve a pressing problem. This code <strong>isn’t</strong> very:</p>
+<ul>
+<li><p>Elegant</p></li>
+<li><p>Fast</p></li>
+<li><p>Easy to understand</p></li>
+</ul></li>
+<li><p>Compared to other programming languages, the R community is more focused on results than processes</p></li>
+<li><p>Inconsistency is rife across contributed packages, and even within base R</p></li>
+<li><p>R is not a particularly fast programming language</p></li>
+</ul>
+</div>
+</div>
+<div id="who-should-read-this-book" class="section level2">
+<h2><span class="header-section-number">1.2</span> Who should read this book</h2>
+<ul>
+<li><p>Intermediate R programmers who want to dive deeper into R</p></li>
+<li><p>Programmers from other languages who are learning R and want to understand how R works</p>
+<ul>
+<li><p>You should need to:</p>
+<ul>
+<li><p>Have written a decent amount of code in R or another programming language</p>
+<ul>
+<li>In the case of R you can start with <span class="citation">(Grolemund 2014)</span></li>
+</ul></li>
+<li><p>Be familiar with the basics of data analysis <span class="citation">(Wickham and Grolemund 2016)</span>:</p>
+<ul>
+<li><p>Importing</p></li>
+<li><p>Wrangling</p></li>
+<li><p>Visualizing</p></li>
+<li><p>Modeling</p></li>
+<li><p>Communicating</p></li>
+</ul></li>
+<li><p>Have written a number of functions</p></li>
+<li><p>Be familiar with the installation and use of <strong><a href="https://cran.r-project.org/">CRAN</a></strong> packages</p></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="what-you-will-get-out-of-this-book" class="section level2">
+<h2><span class="header-section-number">1.3</span> What you will get out of this book</h2>
+<p>After reading this book, you will:</p>
+<ul>
+<li><p>Be familiar with the foundations of R</p></li>
+<li><p>Understand what functional programming means, and why it is a useful tool for data science</p></li>
+<li><p>Now about R’s rich variety of object-oriented systems:</p>
+<ul>
+<li><p>S3</p></li>
+<li><p>S4</p></li>
+<li><p>S6</p></li>
+</ul></li>
+<li><p>Appreciate the double-edged sword of metaprogramming</p></li>
+<li><p>Have a good intuition for which operations in R are slow or use a lot of memory</p></li>
+</ul>
+</div>
+<div id="what-you-will-not-learn" class="section level2">
+<h2><span class="header-section-number">1.4</span> What you will not learn</h2>
+<ul>
+<li><p>R as a data analysis tool</p>
+<ul>
+<li>See <span class="citation">(Wickham and Grolemund 2016)</span> if you want to learn this</li>
+</ul></li>
+<li><p>Build R packages to communicate your code</p>
+<ul>
+<li>See <span class="citation">(Wickham and Bryan 2015)</span> if you want to learn this</li>
+</ul></li>
+</ul>
+</div>
+<div id="meta-techniques" class="section level2">
+<h2><span class="header-section-number">1.5</span> Meta-techniques</h2>
+<p>There are two meta-techniques that are tremendously helpful for improving your skills as an R programmer:</p>
+<ul>
+<li><p>Reading source code</p>
+<ul>
+<li>A great place to start developing this skill is to look at the source code of the functions and packages you use most often</li>
+</ul></li>
+<li><p>Adopting a scientific mindset</p>
+<ul>
+<li><p>Develop a hypothesis</p></li>
+<li><p>Design some experiments and run them</p></li>
+<li><p>Record the results</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="recommended-reading" class="section level2">
+<h2><span class="header-section-number">1.6</span> Recommended reading</h2>
+<ul>
+<li><p>To understand why R’s object systems work see <span class="citation">(Abelson, Sussman, and Sussman 1996)</span></p></li>
+<li><p>To understand the trade-offs that R has made compared to other programming languages see <span class="citation">(Van-Roy and Haridi 2004)</span></p></li>
+<li><p>To learn to be a better programmer see <span class="citation">(Hunt and Thomas 2000)</span></p></li>
+</ul>
+</div>
+<div id="getting-help" class="section level2">
+<h2><span class="header-section-number">1.7</span> Getting help</h2>
+<ul>
+<li><p><strong><a href="https://community.rstudio.com/">RStudio Community</a></strong></p></li>
+<li><p><strong><a href="https://stackoverflow.com/">StackOverflow</a></strong></p>
+<ul>
+<li><p>If you want help remember to:</p>
+<ul>
+<li><p>Make sure you have the latest version of R and of the package (or packages) you are having problems with</p></li>
+<li><p>Spend some time creating a <strong>repr</strong>oducible <strong>ex</strong>ample (<strong>reprex</strong>)</p>
+<ul>
+<li>See <strong><a href="https://CRAN.R-project.org/package=reprex">reprex</a></strong></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
 </div>
 </div>
 <div id="bibliography" class="section level1 unnumbered">
 <h1>Bibliography</h1>
 <div id="refs" class="references">
+<div id="ref-abelson_structure_1996">
+<p>Abelson, Harold, Gerald Jay Sussman, and Julie Sussman. 1996. <em>Structure and Interpretation of Computer Programs</em>. 2. ed. Electrical Engineering and Computer Science Series. Cambridge, Mass.: MIT Press [u.a.]. <a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html">https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html</a>.</p>
+</div>
+<div id="ref-grolemund_hands-programming_2014">
+<p>Grolemund, Garrett. 2014. <em>Hands-on Programming with R</em>. First edition. Sebastopol, CA: O’Reilly. <a href="https://rstudio-education.github.io/hopr/">https://rstudio-education.github.io/hopr/</a>.</p>
+</div>
+<div id="ref-hunt_pragmatic_2000">
+<p>Hunt, Andrew, and David Thomas. 2000. <em>The Pragmatic Programmer: From Journeyman to Master</em>. Reading, Mass: Addison-Wesley.</p>
+</div>
+<div id="ref-van-roy_concepts_2004">
+<p>Van-Roy, Peter, and Seif Haridi. 2004. <em>Concepts, Techniques, and Models of Computer Programming</em>. Cambridge, Mass: MIT Press.</p>
+</div>
 <div id="ref-wickham_advanced_2019">
 <p>Wickham, Hadley. 2019. <em>Advanced R</em>. Second edition. Boca Raton: CRC Press/Taylor &amp; Francis Group. <a href="https://adv-r.hadley.nz/">https://adv-r.hadley.nz/</a>.</p>
+</div>
+<div id="ref-wickham_r_2015">
+<p>Wickham, Hadley, and Jennifer Bryan. 2015. <em>R Packages</em>. First edition. Sebastopol, CA: O’Reilly Media. <a href="https://r-pkgs.org/">https://r-pkgs.org/</a>.</p>
+</div>
+<div id="ref-wickham_r_2016">
+<p>Wickham, Hadley, and Garrett Grolemund. 2016. <em>R for Data Science: Import, Tidy, Transform, Visualize, and Model Data</em>. First edition. Sebastopol, CA: O’Reilly. <a href="https://r4ds.had.co.nz/">https://r4ds.had.co.nz/</a>.</p>
 </div>
 </div>
 </div>

@@ -38,5 +38,149 @@ This section is based on [@wickham_advanced_2019, Chapter 1]
 
 ## Why R?
 
+- Free, open source, and available on every major platform
+
+- Diverse and welcoming community: online and in person
+
+    + __[R4DS Online Learning Community](https://www.rfordatasci.com/)__
+    
+    + __[R-Ladies](https://rladies.org/)__
+
+- Massive set of packages for:
+
+    + Statistical modelling
+    
+    + Machine learning
+    
+    + Visualisation
+    
+    + Importing and manipulating data
+    
+        + __[CRAN](https://cran.r-project.org/)__ 
+        
+        + __[Bioconductor](https://www.bioconductor.org/)__
+
+- __[RStudio IDE](https://rstudio.com/products/rstudio/)__ provides an integrated development environment
+
+- There is a company called __[RStudio](https://rstudio.com/)__ whose mission is to create free and open-source software for data science, scientific research, and technical communication
+
+- A strong foundation of functional programming
+
+- Powerful metaprogramming facilities
+
+- The ease with which R can connect to high-performance programming languages like C, Fortran, and C++
+
+### Why R is not perfect?
+
+- Much of the R code you’ll see in the wild is written in haste to solve a pressing problem. This code __isn't__ very: 
+
+    + Elegant
+    
+    + Fast
+    
+    + Easy to understand
+
+- Compared to other programming languages, the R community is more focused on results than processes
+
+- Inconsistency is rife across contributed packages, and even within base R
+
+- R is not a particularly fast programming language
+
+## Who should read this book
+
+- Intermediate R programmers who want to dive deeper into R
+
+- Programmers from other languages who are learning R and want to understand how R works
+
+    + You should need to:
+    
+        + Have written a decent amount of code in R or another programming language
+        
+            + In the case of R you can start with [@grolemund_hands-programming_2014]
+        
+        + Be familiar with the basics of data analysis [@wickham_r_2016]:
+        
+            + Importing
+            
+            + Wrangling
+            
+            + Visualizing
+            
+            + Modeling
+            
+            + Communicating
+            
+        + Have written a number of functions
+        
+        + Be familiar with the installation and use of __[CRAN](https://cran.r-project.org/)__ packages
+        
+## What you will get out of this book
+
+After reading this book, you will:
+
+- Be familiar with the foundations of R
+
+- Understand what functional programming means, and why it is a useful tool for data science
+
+- Now about R’s rich variety of object-oriented systems:
+
+    + S3
+    
+    + S4
+    
+    + S6
+
+- Appreciate the double-edged sword of metaprogramming
+
+- Have a good intuition for which operations in R are slow or use a lot of memory
+
+## What you will not learn
+
+- R as a data analysis tool
+
+    + See [@wickham_r_2016] if you want to learn this
+
+- Build R packages to communicate your code
+
+    + See [@wickham_r_2015] if you want to learn this
+    
+## Meta-techniques
+
+There are two meta-techniques that are tremendously helpful for improving your skills as an R programmer: 
+
+- Reading source code
+
+    + A great place to start developing this skill is to look at the source code of the functions and packages you use most often
+
+- Adopting a scientific mindset
+
+    + Develop a hypothesis
+    
+    + Design some experiments and run them
+    
+    + Record the results
+
+## Recommended reading
+
+- To understand why R’s object systems work see [@abelson_structure_1996]
+
+- To understand the trade-offs that R has made compared to other programming languages see [@van-roy_concepts_2004]
+
+- To learn to be a better programmer see [@hunt_pragmatic_2000]
+
+## Getting help
+
+- __[RStudio Community](https://community.rstudio.com/)__
+
+- __[StackOverflow](https://stackoverflow.com/)__
+
+    + If you want help remember to:
+
+        + Make sure you have the latest version of R and of the package (or packages) you are having problems with
+
+        + Spend some time creating a **repr**oducible **ex**ample (__reprex__)
+        
+            + See __[reprex](https://CRAN.R-project.org/package=reprex)__
+
 # Bibliography
 
