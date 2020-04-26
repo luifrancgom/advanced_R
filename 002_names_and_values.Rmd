@@ -31,6 +31,7 @@ knitr::opts_chunk$set(echo      = TRUE,
 
 library(lobstr)
 library(knitr)
+library(tidyverse)
 ```
 
 # Names and values
@@ -138,6 +139,114 @@ obj_addr(y)
 ```
 
 ### Non-syntactic names
+
+R has strict rules about what constitutes a valid name:
+
+- Must consist of letters, digits, . and _
+
+- Can’t begin with _ or a digit
+
+- You can’t use any of the reserved words like `TRUE`, `NULL`, `if`, and `function`
+
+    + see the complete list in `?Reserved`
+    
+A name that doesn’t follow these rules is a non-syntactic name. For example:
+
+```{r, error=TRUE}
+
+_abc <- 1
+```
+
+```{r, error=TRUE}
+if   <- 10
+```
+
+It's possible to override these rules and use any name. For example:
+
+```{r }
+
+`_abc` <- 1
+`if`   <- 10
+```
+
+__Observation__ : You can also create non-syntactic bindings using single or double quotes (e.g. `"_abc" <- 1`) instead of backticks, but you shouldn’t, because you’ll have to use a different syntax to retrieve the values
+
+### Exercises
+
+1. Explain the relationship between a, b, c and d in the following code
+
+```{r}
+
+a <- 1:10
+b <- a
+c <- b
+d <- 1:10
+```
+
+- `a <- 1:10` means that `<-` assign the name `a` to the object `1:10` that has an associated identifier where we can access using `lobstr::obj_addr(a)`
+
+    + `obj_addr(a)` gives the address of the value that `a` points to
+    
+- `b <- a` means that `<-` assign the name `b` to the same object `1:10` where `obj_addr(a)` $=$ `obj_addr(b)`
+
+- `c <- b` means that `<-` assign the name `c` to the same object `1:10` where `obj_addr(b)` $=$ `obj_addr(c)`
+
+```{r}
+
+map_lgl(.x = list(obj_addr(b), 
+                  obj_addr(b), 
+                  obj_addr(c)), 
+        .f = identical, obj_addr(a))
+```
+
+
+- `d <- 1:10` means that `<-` assign the name `d` to the object `1:10` but where `obj_addr(d)` $\neq$ `obj_addr(c)`
+
+```{r}
+
+map_lgl(.x = list(obj_addr(a), 
+                  obj_addr(b), 
+                  obj_addr(b), 
+                  obj_addr(c)), 
+        .f = identical, obj_addr(d))
+```
+
+2. The following code accesses the mean function in multiple ways. Do they all point to the same underlying function object? Verify this with `lobstr::obj_addr()`
+
+- `mean`
+- `base::mean`  
+- `get("mean")`
+- `evalq(mean)`
+- `match.fun("mean")`
+
+Creating all the possible functions $f: A \rightarrow A$ where:
+
+$$A = \{ \text{obj_addr(mean), obj_addr(base::mean), obj_addr(get("mean")), obj_addr(evalq(mean)), obj_addr(match.fun("mean"))} \}$$ 
+
+without including the possibility of $f(a) = a$ where $a \in A$ and verifying if $f(a) \equiv b$
+
+```{r}
+
+map_lgl(.x = list(obj_addr(base::mean), 
+                  obj_addr(get("mean")), 
+                  obj_addr(evalq(mean)), 
+                  obj_addr(match.fun("mean"))), 
+        .f = identical, obj_addr(mean))
+
+map_lgl(.x = list(obj_addr(get("mean")), 
+                  obj_addr(evalq(mean)), 
+                  obj_addr(match.fun("mean"))), 
+        .f = identical, obj_addr(base::mean))
+
+map_lgl(.x = list(obj_addr(evalq(mean)), 
+                  obj_addr(match.fun("mean"))), 
+        .f = identical, obj_addr(get("mean")))
+
+map_lgl(.x = list(obj_addr(match.fun("mean"))), 
+        .f = identical, obj_addr(evalq(mean)))
+```
+
+3. By default, base R data import functions, like read.csv(), will automatically convert non-syntactic names to syntactic ones. Why might this be problematic? What option allows you to suppress this behavior?
 
 
 
