@@ -248,6 +248,85 @@ map_lgl(.x = list(obj_addr(match.fun("mean"))),
 
 3. By default, base R data import functions, like read.csv(), will automatically convert non-syntactic names to syntactic ones. Why might this be problematic? What option allows you to suppress this behavior?
 
+```{r}
+
+# The original names of the columns are: if and _1234
+## names of the variables in the data frame are checked to ensure that they are syntactically valid
+## and adjusted using  make.names
+df_syntactic_name <- read.csv(file = "002_exercise_2_2_2_3.csv",check.names = TRUE)
+print(df_syntactic_name)
+
+# names of the variables in the data frame are not checked
+df__non_syntactic_name <- read.csv(file = "002_exercise_2_2_2_3.csv", check.names = FALSE)
+print(print(df_syntactic_name))
+
+# Using the tidyverse
+tbl__non_syntactic_name <- read_csv(file = "002_exercise_2_2_2_3.csv")
+print(tbl__non_syntactic_name)
+```
+
+- I think it is problematic because maybe you first need the names as they are to identify the variables from a document that explains the defintion of each variable. If they are changed you will be lost.    
+
+4. What rules does `make.names()` use to convert non-syntactic names into syntactic ones?
+
+- According to `?make.names`: 
+
+    + The character "X" is prepended if necessary
+    
+    + All invalid characters are translated to "."
+    
+    + A missing value is translated to "NA"
+    
+    + Names which match R keywords have a dot appended to them
+    
+    + Duplicated values are altered by `make.unique`
+    
+```{r}
+make.names(".123")
+make.names("1$2 3")
+make.names(NA)
+make.names("for")
+make.names(c("for", "for")) %>% make.unique()
+```
+
+
+5. I slightly simplified the rules that govern syntactic names. Why is `.123e1` not a syntactic name? Read `?make.names` for the full details
+
+    + According to `?makenames` "A syntactically valid name consists of letters, numbers and the dot or underline characters and __starts with a letter or the dot not followed by a number.__ Names such as ".2way" are not valid, and neither are the reserved words." 
+    
+      + Therefore `.123e1` is a non-syntactic name because the dot is follow by number $1$ 
+
+## Copy-on-modify
+
+Consider the following code
+
+```{r}
+
+x <- c(1, 2, 3)
+y <- x
+
+
+
+y[3] <- 4
+
+print(x)
+print(y)
+```
+
+Modifying  `y` clearly didn't modify `x`
+
+__Observation__ In the case of `Python`things are different:
+
+```{python}
+
+x = [1, 2, 3]
+y = x
+
+y[2] = 4
+
+print(x)
+print(y)
+```
 
 
 # Bibliography

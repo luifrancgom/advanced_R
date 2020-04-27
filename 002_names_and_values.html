@@ -1798,6 +1798,7 @@ summary {
 <li><a href="#names-and-values"><span class="toc-section-number">1</span> Names and values</a><ul>
 <li><a href="#introduction"><span class="toc-section-number">1.1</span> Introduction</a></li>
 <li><a href="#binding-basics"><span class="toc-section-number">1.2</span> Binding basics</a></li>
+<li><a href="#copy-on-modify"><span class="toc-section-number">1.3</span> Copy-on-modify</a></li>
 </ul></li>
 <li><a href="#bibliography">Bibliography</a></li>
 </ul>
@@ -1905,9 +1906,9 @@ Source: <span class="citation">(Wickham 2019, Chapter 2, Section 2.2)</span>
 </div>
 <p>You might have noticed that the value <code>1:3</code> has a label: <code>0x74b</code>. While the vector doesn’t have a name, we will occasionally need to refer to an object independent of its bindings. To make that possible, we will label values with a unique identifier. You can access an object’s identifier with <code>lobstr::obj_addr()</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">obj_addr</span>(x)</span></code></pre></div>
-<pre><code>## [1] &quot;0xcf61208&quot;</code></pre>
+<pre><code>## [1] &quot;0x9622430&quot;</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">obj_addr</span>(y)</span></code></pre></div>
-<pre><code>## [1] &quot;0xcf61208&quot;</code></pre>
+<pre><code>## [1] &quot;0x9622430&quot;</code></pre>
 <div id="non-syntactic-names" class="section level3">
 <h3><span class="header-section-number">1.2.1</span> Non-syntactic names</h3>
 <p>R has strict rules about what constitutes a valid name:</p>
@@ -2001,7 +2002,98 @@ Source: <span class="citation">(Wickham 2019, Chapter 2, Section 2.2)</span>
 <ol start="3" style="list-style-type: decimal">
 <li>By default, base R data import functions, like read.csv(), will automatically convert non-syntactic names to syntactic ones. Why might this be problematic? What option allows you to suppress this behavior?</li>
 </ol>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="co"># The original names of the columns are: if and _1234</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="co">## names of the variables in the data frame are checked to ensure that they are syntactically valid</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="co">## and adjusted using  make.names</span></span>
+<span id="cb37-4"><a href="#cb37-4"></a>df_syntactic_name &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> <span class="st">&quot;002_exercise_2_2_2_3.csv&quot;</span>,<span class="dt">check.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="kw">print</span>(df_syntactic_name)</span></code></pre></div>
+<pre><code>##   if. X_1234 column.1  X column.1.1 X_1234.1
+## 1   1      2        3  4          5        6
+## 2   7      8        9 10         11       12
+## 3  13     14       15 16         17       18</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># names of the variables in the data frame are not checked</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>df__non_syntactic_name &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> <span class="st">&quot;002_exercise_2_2_2_3.csv&quot;</span>, <span class="dt">check.names =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="kw">print</span>(<span class="kw">print</span>(df_syntactic_name))</span></code></pre></div>
+<pre><code>##   if. X_1234 column.1  X column.1.1 X_1234.1
+## 1   1      2        3  4          5        6
+## 2   7      8        9 10         11       12
+## 3  13     14       15 16         17       18
+##   if. X_1234 column.1  X column.1.1 X_1234.1
+## 1   1      2        3  4          5        6
+## 2   7      8        9 10         11       12
+## 3  13     14       15 16         17       18</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co"># Using the tidyverse</span></span>
+<span id="cb41-2"><a href="#cb41-2"></a>tbl__non_syntactic_name &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="dt">file =</span> <span class="st">&quot;002_exercise_2_2_2_3.csv&quot;</span>)</span>
+<span id="cb41-3"><a href="#cb41-3"></a><span class="kw">print</span>(tbl__non_syntactic_name)</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 6
+##    `if` `_1234` `column 1`    X4 `column 1_1` `_1234_1`
+##   &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+## 1     1       2          3     4            5         6
+## 2     7       8          9    10           11        12
+## 3    13      14         15    16           17        18</code></pre>
+<ul>
+<li>I think it is problematic because maybe you first need the names as they are to identify the variables from a document that explains the defintion of each variable. If they are changed you will be lost.</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>What rules does <code>make.names()</code> use to convert non-syntactic names into syntactic ones?</li>
+</ol>
+<ul>
+<li><p>According to <code>?make.names</code>:</p>
+<ul>
+<li><p>The character “X” is prepended if necessary</p></li>
+<li><p>All invalid characters are translated to “.”</p></li>
+<li><p>A missing value is translated to “NA”</p></li>
+<li><p>Names which match R keywords have a dot appended to them</p></li>
+<li><p>Duplicated values are altered by <code>make.unique</code></p></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">make.names</span>(<span class="st">&quot;.123&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;X.123&quot;</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="kw">make.names</span>(<span class="st">&quot;1$2 3&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;X1.2.3&quot;</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="kw">make.names</span>(<span class="ot">NA</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;NA.&quot;</code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="kw">make.names</span>(<span class="st">&quot;for&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;for.&quot;</code></pre>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="kw">make.names</span>(<span class="kw">c</span>(<span class="st">&quot;for&quot;</span>, <span class="st">&quot;for&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">make.unique</span>()</span></code></pre></div>
+<pre><code>## [1] &quot;for.&quot;   &quot;for..1&quot;</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li><p>I slightly simplified the rules that govern syntactic names. Why is <code>.123e1</code> not a syntactic name? Read <code>?make.names</code> for the full details</p>
+<ul>
+<li><p>According to <code>?makenames</code> “A syntactically valid name consists of letters, numbers and the dot or underline characters and <strong>starts with a letter or the dot not followed by a number.</strong> Names such as”.2way&quot; are not valid, and neither are the reserved words.&quot;</p>
+<ul>
+<li>Therefore <code>.123e1</code> is a non-syntactic name because the dot is follow by number <span class="math inline">\(1\)</span></li>
+</ul></li>
+</ul></li>
+</ol>
 </div>
+</div>
+<div id="copy-on-modify" class="section level2">
+<h2><span class="header-section-number">1.3</span> Copy-on-modify</h2>
+<p>Consider the following code</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a>x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb53-2"><a href="#cb53-2"></a>y &lt;-<span class="st"> </span>x</span>
+<span id="cb53-3"><a href="#cb53-3"></a></span>
+<span id="cb53-4"><a href="#cb53-4"></a></span>
+<span id="cb53-5"><a href="#cb53-5"></a></span>
+<span id="cb53-6"><a href="#cb53-6"></a>y[<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">4</span></span>
+<span id="cb53-7"><a href="#cb53-7"></a></span>
+<span id="cb53-8"><a href="#cb53-8"></a><span class="kw">print</span>(x)</span></code></pre></div>
+<pre><code>## [1] 1 2 3</code></pre>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1"></a><span class="kw">print</span>(y)</span></code></pre></div>
+<pre><code>## [1] 1 2 4</code></pre>
+<p>Modifying <code>y</code> clearly didn’t modify <code>x</code></p>
+<p><strong>Observation</strong> In the case of <code>Python</code>things are different:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1"></a></span>
+<span id="cb57-2"><a href="#cb57-2"></a>x <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb57-3"><a href="#cb57-3"></a>y <span class="op">=</span> x</span>
+<span id="cb57-4"><a href="#cb57-4"></a></span>
+<span id="cb57-5"><a href="#cb57-5"></a>y[<span class="dv">2</span>] <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb57-6"><a href="#cb57-6"></a></span>
+<span id="cb57-7"><a href="#cb57-7"></a><span class="bu">print</span>(x)</span></code></pre></div>
+<pre><code>## [1, 2, 4]</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1"></a><span class="bu">print</span>(y)</span></code></pre></div>
+<pre><code>## [1, 2, 4]</code></pre>
 </div>
 </div>
 <div id="bibliography" class="section level1 unnumbered">
