@@ -10,7 +10,7 @@ output:
     theme: flatly
     toc: yes
     toc_depth: 2
-bibliography: C:/Users/Asus/Desktop/personal_files/advanced_R/advanced_R.bib
+bibliography: advanced_R.bib
 ---
 
 <style>
