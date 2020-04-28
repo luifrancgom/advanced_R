@@ -590,6 +590,15 @@ However the only way to be sure according to `@thisisdaryn (Daryn Ramsden)`, is 
 # pryr::show_c_source(.Primitive("[<-"))
 ```
 
+3. Sketch out the relationship between the following objects:
+
+```{r}
+
+a <- 1:10
+b <- list(a, a)
+c <- list(b, a, 1:10)
+```
+
 
 # Bibliography
 
