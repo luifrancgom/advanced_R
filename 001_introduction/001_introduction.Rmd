@@ -11,6 +11,7 @@ output:
     toc: yes
     toc_depth: 2
 bibliography: advanced_R.bib
+link-citations: yes
 ---
 
 <style>

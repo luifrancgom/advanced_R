@@ -11,6 +11,7 @@ output:
     toc: yes
     toc_depth: 2
 bibliography: advanced_R.bib
+link-citations: yes
 ---
 
 <style>
@@ -32,7 +33,7 @@ knitr::opts_chunk$set(echo      = TRUE,
 library(lobstr)
 library(knitr)
 library(tidyverse)
-library(pryr)
+library(bench)
 ```
 
 # Names and values
@@ -409,7 +410,7 @@ obj_addr(x) == obj_addr(z)
 include_graphics(path = "002_binding-f2.png")
 ```
 
-### Lists
+## Lists
 
 It’s not just names (i.e. variables) that point to values: elements of lists do too
 
@@ -599,8 +600,353 @@ b <- list(a, a)
 c <- list(b, a, 1:10)
 ```
 
+```{r}
+
+print(lobstr::ref(c))
+
+print(obj_addr(c))
+print(obj_addr(b))
+print(obj_addr(a))
+```
+
+- First `a` points to the object with the address `r obj_addr(a)`
+
+- Second `b` points to the object with the address `r obj_addr(b)` which contains two objects with the same address `r obj_addr(a)`
+
+- Third `c` points to the object with the address `r obj_addr(b)` which contains 3 objects with 3 different addresses that corresponds to `r obj_addr(b)`, `r obj_addr(a)` and another address that corresponds to an object that is not related with a name
+
+4. What happens when you run this code?
+
+```{r}
+
+x <- list(1:10)
+
+print(ref(x))
+```
+
+First `x` points to the object with the address `r obj_addr(x)` which contains an object with the address `r obj_addrs(x)`
+
+```{r}
+
+x[[2]] <- x
+
+print(ref(x))
+```
+
+Then `x` now points to the object with the address `r obj_addr(x)` which contains two objects with the addresses `r obj_addrs(x)` because we apply  `x[[2]] <- x`
+
+## Object size
+
+You can find out how much memory an object takes with `lobstr::obj_size()`
+
+__Observation__: Beware of the  `utils::object.size()`  function. It does not correctly account for shared references and will return sizes that are too large
+
+```{r}
+
+obj_size(letters)
+obj_size(diamonds)
+```
+
+Since the elements of lists are references to values, the size of a list might be much smaller than you expect:
+
+```{r}
+
+x <- 1:10
+y <- list(x, x, x, x)
+
+obj_size(x)
+obj_size(y)
+
+
+```
+
+The difference between `y` and `x` is only `r obj_size(y) %>% as.numeric() - obj_size(x) %>% as.numeric()`
+
+Similarly, because R uses a global string pool character vectors take up less memory than you might expect: repeating a string 100 times does not make it take up 100 times as much memory:
+
+```{r}
+
+obj_size("apple")
+obj_size(rep(x = "apple", times = 100))
+```
+
+References also make it challenging to think about the size of individual objects:
+
+- `obj_size(x) + obj_size(y) = obj_size(x, y)` if there are no shared values
+
+- For example if `x <- 1:10` and `y <- list(x, x, x, x)` the combined size of `x` and `y` is the same as the size of `y`:
+
+```{r}
+
+obj_size(x, y)
+```
+
+Finally, R 3.5.0 and later versions have a feature that might lead to surprises: `ALTREP`, short for __alternative representation__. This allows R to represent certain types of vectors very compactly
+
+```{r}
+
+obj_size(1:10)
+obj_size(1:10e2)
+obj_size(1:10e4)
+obj_size(1:10e8)
+```
+
+### Exercises
+
+1. In the following example, why are `object.size(y)` and `obj_size(y)` so radically different? Consult the documentation of `object.size()`
+
+```{r}
+
+y <- rep(list(runif(1e4)), 100)
+
+object.size(y)
+object.size(runif(1e4))
+
+obj_size(y)
+obj_size(runif(1e4))
+```
+
+Using `?object.size` you find this: 
+
+_This function merely provides a rough indication: it should be reasonably accurate for atomic vectors, but does not detect if elements of a list are shared. For example sharing among elements of a character vector is taken into account, but not that between character vectors in a single object)_
+
+- In `y <- rep(list(runif(1e4)), 100)` elements in this list are shared
+
+2. Take the following list. Why is its size somewhat misleading?
+
+```{r}
+
+funs <- list(mean, sd, var)
+obj_size(funs)
+```
+First I didn't know the answer so I check out __[Advanced R Solutions](https://advanced-r-solutions.rbind.io/)__. According to this source:
+
+_All three functions are built-in to R as part of the base and stats packages and hence always available. We can checkout that this applies to about 2400 objects usually loaded by default_
+
+```{r}
+
+```
+
+
+```{r}
+
+obj_size(list(mean), list(sd), list(var))
+
+obj_size(list(mean)) + obj_size(list(sd)) + obj_size(list(var)) 
+```
+
+3. Predict the output of the following code taking into account that:
+
+```{r}
+a <- runif(1e6)
+obj_size(a)
+```
+
+- `b <- list(a, a)`
+
+  + `obj_size(b)`
+  + `obj_size(a, b)`
+ 
+I think that `obj_size(b)` and `obj_size(a, b)` will be approximately equal to `obj_size(a)`
+because `b` points to an object that contains 2 equal references pointed out by `a`
+
+```{r}
+
+b <- list(a, a)
+
+obj_size(b)
+
+obj_size(b, a)
+obj_sizes(b[[1]], b[[2]], a)
+```
+
+- `b[[1]][[1]] <- 10`
+
+  + `obj_size(b)`
+  + `obj_size(a, b)`
+  
+I think that `obj_size(b)` and `obj_size(a, b)` will be greater than `obj_size(b)` because `b[[1]][[1]]` points out to a new object different from what was pointed out initially by `a`
+
+```{r}
+
+b[[1]][[1]] <- 10
+
+obj_size(b)
+obj_size(a, b)
+
+obj_sizes(a, b[[1]], b[[2]])
+```
+
+- `b[[2]][[1]] <- 10`
+
+  + `obj_size(b)`
+  + `obj_size(a, b)`
+  
+I think that `obj_size(b)` and `obj_size(a, b)` will be even greater than `obj_size(b)` because `b[[1]][[1]]` and `b[[2]][[1]]` points out to 2 new objects that are different from what was pointed out initially by `a`
+
+```{r}
+
+b[[2]][[1]] <- 10
+
+obj_size(b)
+obj_size(a, b)
+
+obj_sizes(a, b[[1]], b[[2]])
+```
+
+## Modify-in-place
+
+As we’ve seen above, modifying an R object usually creates a copy
+
+- There are two exceptions
+
+    + Objects with a single binding get a special performance optimisation
+    
+    + Environments, a special type of object, are always modified in place
+    
+### Objects with a single binding
+
+If an object has a single name bound to it, R will modify it in place. However, complications may arise so it's better to determine it empirically with `tracemem()`:
+
+```{r}
+
+v <- c(1, 2, 3)
+
+obj_addr(v)
+
+v[[3]] <- 4
+
+obj_addr(v)
+```
+
+In this case when we apply `v[[3]] <- 4`, R copy the object even if `c(1, 2, 3)` has a single name, `v`, bound to it.
+
+However if you run the same experiment in a script you obtain the result that is pointed out in the book:
+
+```{r}
+
+include_graphics(path = "002_single_binding.png")
+```
+
+
+Let’s explore the subtleties with a case study using for loops. This loop is surprisingly slow because each iteration of the loop copies the data frame:
+
+```{r}
+
+x <- data.frame(matrix(data = runif(n = 1e4), ncol = 5))
+medians <- vapply(X = x, FUN = median, FUN.VALUE = numeric(1))
+
+obj_addr(x)
+tracemem(x)
+
+for (i in seq_along(medians)) {
+
+    x[[i]] <- x[[i]] - medians[[i]] 
+        
+}
+
+untracemem(x)
+obj_addr(x)
+```
+
+We can reduce the number of copies by using a list instead of a data frame:
+
+```{r}
+
+y <- as.list(x)
+
+obj_addr(y)
+tracemem(y)
+
+for (i in seq_along(medians)) {
+  
+  y[[i]] <- y[[i]] - medians[[i]] 
+  
+}
+
+obj_addr(y)
+untracemem(y)
+```
+
+### Environments 
+
+You’ll learn more about environments in Chapter 7, but it’s important to mention them here because their behavior is different from that of other objects: environments are always modified in place
+
+```{r}
+
+e1 <- rlang::env(a = 1, b = 2, c = 3)
+obj_addr(e1)
+
+e2 <- e1
+obj_addr(e2)
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.5.2]"}
+
+include_graphics(path = "002_e-modify-1.png")
+```
+
+If we change a binding, the environment is modified in place
+
+```{r}
+
+e2$c <- 4
+
+obj_addr(e2)
+obj_addr(e1)
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.5.2]"}
+
+include_graphics(path = "002_e-modify-2.png")
+```
+
+One consequence of this is that environments can contain themselves:
+
+```{r}
+
+e <- rlang::env()
+e$self <- e
+
+ref(e)
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.5.2]"}
+
+include_graphics(path = "002_e-self.png")
+```
+
+### Exercises
+
+1. Explain why the following code doesn’t create a circular list
+
+- `x <- list()`
+- `x[[1]] <- x`
+
+We have the following: 
+
+```{r}
+
+x <- list()
+
+obj_addr(x)
+```
+
+First `x` points to the object with the address `r obj_addr(x)`
+
+
+```{r}
+
+x[[1]] <- x
+
+obj_addr(x)
+ref(x)
+```
+
+Then `x` points to the object with the address `r obj_addr(x)` and `x[[1]]` points to the object with the address `r obj_addr(x[[1]])` 
+
+2. Wrap the two methods for subtracting medians into two functions, then use the [`bench` package](https://CRAN.R-project.org/package=bench) to carefully compare their speeds. How does performance change as the number of columns increase?
+
 
 # Bibliography
-
-
 
