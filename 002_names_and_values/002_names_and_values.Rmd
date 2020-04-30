@@ -119,7 +119,8 @@ To further clarify this distinction let's use a diagram where there is a binding
 
 include_graphics(path = "002_binding-1.png")
 ```
- For example, if you run this code, you don’t get another copy of the value c(1, 2, 3), you get another binding to the existing object:
+
+For example, if you run this code, you don’t get another copy of the value c(1, 2, 3), you get another binding to the existing object:
  
 ```{r}
 
@@ -831,6 +832,8 @@ include_graphics(path = "002_single_binding.png")
 
 Let’s explore the subtleties with a case study using for loops. This loop is surprisingly slow because each iteration of the loop copies the data frame:
 
+__Observation__ : These copies are shallow, they only copy the reference to each individual column, not the contents of the columns
+
 ```{r}
 
 x <- data.frame(matrix(data = runif(n = 1e4), ncol = 5))
@@ -947,6 +950,89 @@ Then `x` points to the object with the address `r obj_addr(x)` and `x[[1]]` poin
 
 2. Wrap the two methods for subtracting medians into two functions, then use the [`bench` package](https://CRAN.R-project.org/package=bench) to carefully compare their speeds. How does performance change as the number of columns increase?
 
+I was not able to understand the function `bench::mark`. Please check out __[Advanced R Solutions](https://advanced-r-solutions.rbind.io/)__ to know the answer  
+
+3. What happens if you attempt to use `tracemem()` on an environment?
+
+```{r, error=TRUE}
+
+e1 <- rlang::env(d = 5, e = 6, f = 8)
+
+tracemem(e1)
+
+e2 <- e1
+
+e2$f <- 9
+e1$d <- 4
+
+untracemem(e1)
+
+
+```
+
+You get an error as you can verify above
+
+## Unbinding and the garbage collector
+
+Consider this code:
+
+```{r}
+
+x <- 1:3
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.6]"}
+
+include_graphics(path = "002_binding-1.png")
+```
+
+```{r}
+
+x <- 2:4
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.6]"}
+
+include_graphics(path = "002_unbinding-2.png")
+```
+
+```{r}
+
+rm(x)
+```
+
+```{r fig.cap="Source: [@wickham_advanced_2019, Chapter 2, Section 2.6]"}
+
+include_graphics(path = "002_unbinding-3.png")
+```
+
+We created two objects, but by the time the code finishes, neither object is bound to a name. How do these objects get deleted? That’s the job of the __garbage collector__, or GC for short
+
+- The __garbage collector__ (GC) attempts to reclaim garbage, or memory occupied by objects that are no longer in use by a program
+
+The __garbage collector__ (GC) runs automatically whenever R needs more memory to create a new object. Looking from the outside, it’s basically impossible to predict when the GC will run
+
+You can use `base::gc()` to causes a garbage collection to take place:
+
+```{r}
+
+gc()
+```
+
+Also you can use `lobstr::mem_used()` to see the exact number of bytes currently used by R
+
+```{r}
+
+lobstr::mem_used()
+```
+
+This number won’t agree with the amount of memory reported by your operating system:
+
+- It includes objects created by R but not by the R interpreter
+
+- Both R and the operating system are lazy: they won't reclaim memory until it's actually needed. R might be holding on to memory because the OS hasn't yet asked for it back
+
+- R counts the memory occupied by objects but there may be empty gaps due to deleted objects. This problem is known as memory fragmentation
 
 # Bibliography
 
